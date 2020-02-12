@@ -24,7 +24,7 @@ class CEC {
     void begin();
     
     void oldbegin();
-    
+    void test();
     void avancer();
     void envoyer_conf();
     void lire_information();

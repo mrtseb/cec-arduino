@@ -12,17 +12,17 @@ void setup() {
   //on lance les serials 
   serial.begin(115200);
   Serial.begin(9600);
-  delay(100);
+  delay(50);
   
   //on lit les infos de la carte
-  course.lire_information();  
-  delay (2000);
+  course.test();  
+  delay (50);
   
   // on configure la course
   course.configure_longueur_piste(200);
   course.configure_roue(600);
   course.envoyer_conf();
-  
+  delay(100);
   
   
 }
@@ -35,6 +35,8 @@ void loop() {
   //a eviter
   
   course.avancer();
+  delay(50);
+ 
   
   while(1);
    

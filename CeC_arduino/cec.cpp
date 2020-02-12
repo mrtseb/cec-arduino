@@ -33,7 +33,45 @@ CEC::CEC(SoftwareSerial * ss) {
   byte tzone1_LSB=0xA0;
   
 }
+void CEC::test(){
+  
+  txrx->flush();
+  
+  byte tab_test[] = {
+     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,2,0x50,0x01, ZERO, ZERO, FIN_TRAME    
+   };
+
+   byte tab_test2[] = {
+     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,2,0x50,0x02, ZERO, ZERO, FIN_TRAME    
+   };
+   
+   for (int i=0; i<=sizeof(tab_test); i++)
+   {     
+      txrx->write(tab_test[i]);
+      //Serial.println(tab_test[i],OCT);         
+   }
+   delay(100);
+
+   for (int i=0; i<=sizeof(tab_test2); i++)
+   {     
+      txrx->write(tab_test2[i]);
+      //Serial.println(tab_test2[i],OCT);         
+   }
+   delay(100);
+
+   if (txrx->available() > 55)
+    {
+      for (int i=0;i<=55;i++) {
+      char c = txrx->read();
+      Serial.println(byte(c),DEC);
+      }
+  
+  }
+}
+
 void CEC::lire_information(){
+
+   txrx->flush();
 
    byte tab_lire_conf[] = {
      IDCARD_NO_CRC,DEBUT_TRAME,ZERO,OCTETS_LIRE_CONF,CMD_GET_INFO,ZERO, ZERO, FIN_TRAME    
@@ -42,7 +80,7 @@ void CEC::lire_information(){
    for (int i=0; i<=sizeof(tab_lire_conf); i++)
    {     
       txrx->write(tab_lire_conf[i]);
-      Serial.println(tab_lire_conf[i],OCT);         
+      //Serial.println(tab_lire_conf[i],OCT);         
    }
    delay(10);
    Serial.println("---"); 
@@ -52,10 +90,10 @@ void CEC::lire_information(){
     {
       for (int i=0;i<=22;i++) {
       char c = txrx->read();
-      Serial.println(c,OCT);
+      Serial.println(byte(c),DEC);
       }
     }
-    delay(10);
+    
     
 }
 
