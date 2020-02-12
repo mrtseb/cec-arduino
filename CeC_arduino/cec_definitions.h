@@ -14,3 +14,6 @@ written by MrT sebastien.tack@ac-caen.fr
 #define DENTS_PIGNON1     0x0C
 #define DENTS_PIGNON2     0x22
 #define CMD_GET_INFO      16
+#define CMD_TEST          0x50
+#define CMD_TEST_1        0x01
+#define CMD_TEST_2        0x02

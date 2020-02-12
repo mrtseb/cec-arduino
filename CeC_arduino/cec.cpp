@@ -37,12 +37,12 @@ void CEC::test(){
   
   txrx->flush();
   
-  byte tab_test[] = {
-     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,2,0x50,0x01, ZERO, ZERO, FIN_TRAME    
+   byte tab_test[] = {
+     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,2,CMD_TEST,CMD_TEST_1, ZERO, ZERO, FIN_TRAME    
    };
 
    byte tab_test2[] = {
-     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,2,0x50,0x02, ZERO, ZERO, FIN_TRAME    
+     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,2,CMD_TEST,CMD_TEST_2, ZERO, ZERO, FIN_TRAME    
    };
    
    for (int i=0; i<=sizeof(tab_test); i++)
@@ -59,11 +59,11 @@ void CEC::test(){
    }
    delay(100);
 
-   if (txrx->available() > 55)
+   if (txrx->available() > 61)
     {
-      for (int i=0;i<=55;i++) {
-      char c = txrx->read();
-      Serial.println(byte(c),DEC);
+      for (int i=0;i<=61;i++) {
+      byte c = txrx->read();
+      Serial.println(c,HEX);
       }
   
   }

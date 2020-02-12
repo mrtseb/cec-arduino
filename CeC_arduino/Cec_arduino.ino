@@ -34,7 +34,7 @@ void loop() {
   //sert pour le deboguage pour s'assurer que le moteur est ok
   //a eviter
   
-  course.avancer();
+  //course.avancer();
   delay(50);
  
   
