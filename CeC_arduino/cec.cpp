@@ -33,6 +33,35 @@ CEC::CEC(SoftwareSerial * ss) {
   byte tzone1_LSB=0xA0;
   
 }
+
+
+void CEC::lire_mesures(){
+
+  txrx->flush();
+  
+   byte tab_mesure[] = {
+     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,1,CMD_MESURE, ZERO, ZERO, FIN_TRAME    
+   };
+
+   
+   for (int i=0; i<=sizeof(tab_mesure); i++)
+   {     
+      txrx->write(tab_mesure[i]);
+      //Serial.println(tab_mesure[i],OCT);         
+   }
+   delay(100);
+
+   if (txrx->available() > 32)
+    {
+      for (int i=0;i<=32;i++) {
+      byte c = txrx->read();
+      Serial.println(c,HEX);
+     }
+  
+    }
+    
+  
+}
 void CEC::test(){
   
   txrx->flush();

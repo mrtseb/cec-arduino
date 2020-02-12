@@ -28,6 +28,7 @@ class CEC {
     void avancer();
     void envoyer_conf();
     void lire_information();
+    void lire_mesures();
     void configure_longueur_piste(unsigned int piste);
     void configure_longueur_damier(byte damier);
     void configure_roue(unsigned int diametre);

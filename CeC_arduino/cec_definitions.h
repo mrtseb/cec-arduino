@@ -17,3 +17,4 @@ written by MrT sebastien.tack@ac-caen.fr
 #define CMD_TEST          0x50
 #define CMD_TEST_1        0x01
 #define CMD_TEST_2        0x02
+#define CMD_MESURE        0x40

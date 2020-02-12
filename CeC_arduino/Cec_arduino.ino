@@ -15,6 +15,7 @@ void setup() {
   delay(50);
   
   //on lit les infos de la carte
+  Serial.println("test");
   course.test();  
   delay (50);
   
@@ -36,7 +37,9 @@ void loop() {
   
   //course.avancer();
   delay(50);
- 
+  Serial.println("mesures");
+  course.lire_mesures();  
+  delay (50);
   
   while(1);
    
