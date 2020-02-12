@@ -9,16 +9,21 @@ SoftwareSerial serial(11,10);
 CEC course(&serial);
 
 void setup() {
-    
+  //on lance les serials 
   serial.begin(115200);
-  //on lance les serials
- 
-
+  Serial.begin(9600);
+  delay(100);
+  
+  //on lit les infos de la carte
+  course.lire_information();  
+  delay (2000);
+  
   // on configure la course
   course.configure_longueur_piste(200);
   course.configure_roue(600);
+  course.envoyer_conf();
   
-
+  
   
 }
 
@@ -29,7 +34,6 @@ void loop() {
   //sert pour le deboguage pour s'assurer que le moteur est ok
   //a eviter
   
-  course.envoyer_conf();
   course.avancer();
   
   while(1);

@@ -14,26 +14,50 @@ CEC::CEC(SoftwareSerial * ss) {
   configure_longueur_damier(20);
   //roue a 600 dixieme de mm par defaut
   configure_roue(600);
-    byte config_vehicule=ZERO;
-    byte config_course=ZERO;
-    byte periodicite_mesures=ZERO;
-    byte couleurD=ZERO;
-    byte couleur1=ZERO;
-    byte couleur2=ZERO;
-    byte couleurF=ZERO;
-    byte duree_MSB=0x13;
-    byte duree_LSB=0x88;
-    byte vmin_MSB=ZERO;
-    byte vmin_LSB=0x0A;
-    byte vmax_MSB=0x03;
-    byte vmax_LSB=0xE8;
-    byte vzone1_MSB=0x03;
-    byte vzone1_LSB=0xE8;
-    byte tzone1_MSB=0x0F;
-    byte tzone1_LSB=0xA0;
+  byte config_vehicule=ZERO;
+  byte config_course=ZERO;
+  byte periodicite_mesures=ZERO;
+  byte couleurD=ZERO;
+  byte couleur1=ZERO;
+  byte couleur2=ZERO;
+  byte couleurF=ZERO;
+  byte duree_MSB=0x13;
+  byte duree_LSB=0x88;
+  byte vmin_MSB=ZERO;
+  byte vmin_LSB=0x0A;
+  byte vmax_MSB=0x03;
+  byte vmax_LSB=0xE8;
+  byte vzone1_MSB=0x03;
+  byte vzone1_LSB=0xE8;
+  byte tzone1_MSB=0x0F;
+  byte tzone1_LSB=0xA0;
   
 }
-  
+void CEC::lire_information(){
+
+   byte tab_lire_conf[] = {
+     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,OCTETS_LIRE_CONF,CMD_GET_INFO,ZERO, ZERO, FIN_TRAME    
+   };
+   
+   for (int i=0; i<=sizeof(tab_lire_conf); i++)
+   {     
+      txrx->write(tab_lire_conf[i]);
+      Serial.println(tab_lire_conf[i],OCT);         
+   }
+   delay(10);
+   Serial.println("---"); 
+   //recevoir la reponse
+   //recoit 23 octets
+   if (txrx->available() > 22)
+    {
+      for (int i=0;i<=22;i++) {
+      char c = txrx->read();
+      Serial.println(c,OCT);
+      }
+    }
+    delay(10);
+    
+}
 
 void CEC::envoyer_conf(){
  
