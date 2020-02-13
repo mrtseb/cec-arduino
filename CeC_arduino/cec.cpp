@@ -88,9 +88,9 @@ void CEC::test(){
    }
    delay(100);
 
-   if (txrx->available() > 61)
+   if (txrx->available() > 63)
     {
-      for (int i=0;i<=61;i++) {
+      for (int i=0;i<=63;i++) {
       byte c = txrx->read();
       Serial.println(c,HEX);
       }
