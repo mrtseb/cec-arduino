@@ -7,6 +7,7 @@ written by MrT sebastien.tack@ac-caen.fr
 #define OCTETS_CONFIG     69
 #define OCTETS_LIRE_CONF  1
 #define IDCARD_NO_CRC     0xA4
+#define IDCARD_CRC        0xA3
 #define DEBUT_TRAME       0x02
 #define FIN_TRAME         0x03
 #define CMD_ACTION        0x30

@@ -6,7 +6,7 @@ written by MrT sebastien.tack@ac-caen.fr
 #include "cec.h"
 
 CEC::CEC(SoftwareSerial * ss) {
-  octets_sortie = 0;
+  
   txrx = ss;
   //piste a 20m par defaut
   configure_longueur_piste(200);
@@ -32,6 +32,7 @@ CEC::CEC(SoftwareSerial * ss) {
   byte tzone1_MSB=0x0F;
   byte tzone1_LSB=0xA0;
   
+  
 }
 
 
@@ -47,16 +48,16 @@ void CEC::lire_mesures(){
    for (int i=0; i<=sizeof(tab_mesure); i++)
    {     
       txrx->write(tab_mesure[i]);
-      //Serial.println(tab_mesure[i],OCT);         
+               
    }
    delay(100);
 
-   if (txrx->available() > 32)
+   while (txrx->available())
     {
-      for (int i=0;i<=32;i++) {
+      
       byte c = txrx->read();
       Serial.println(c,HEX);
-     }
+     
   
     }
     
@@ -79,27 +80,79 @@ void CEC::test(){
       txrx->write(tab_test[i]);
       //Serial.println(tab_test[i],OCT);         
    }
-   delay(100);
-
+   delay(10);
+   if (txrx->available()) {
+    byte c = txrx->read();
+    Serial.println(c,HEX);    
+   }
+   
    for (int i=0; i<=sizeof(tab_test2); i++)
    {     
       txrx->write(tab_test2[i]);
       //Serial.println(tab_test2[i],OCT);         
    }
-   delay(100);
-
-   if (txrx->available() > 63)
+   delay(10);
+ 
+   while (txrx->available())
     {
-      for (int i=0;i<=63;i++) {
+      //for (int i=0;i<=65;i++) {
       byte c = txrx->read();
       Serial.println(c,HEX);
-      }
-  
-  }
+      //}
+   }
+}
+
+byte CEC::caractere_suivant(){
+       int c = txrx->read(); 
+      //Serial.println(byte(c),HEX);
+      return((byte) c);
+}
+
+int CEC::decode_trame(String s, int n){
+   //recevoir la reponse
+   //recoit N octets
+   byte c,d;
+   int passe = 0;
+   Serial.println(s);
+   if (txrx->available() > n)
+    {
+      //recevoir entete
+        c = caractere_suivant();
+        if (c==IDCARD_CRC) {
+           passe = 1;
+           
+           c = caractere_suivant();
+           if (c==DEBUT_TRAME) {
+             passe = 2;
+             
+             c = caractere_suivant();
+             d = caractere_suivant();
+             nb_octets = (int)((c*256) + d);
+             
+             for (int i=0; i<=nb_octets-1; i++){
+               
+               c = caractere_suivant();
+               trame[i] = c;
+             
+             }
+             //lecture CRC
+             c = caractere_suivant(); c = caractere_suivant();
+             
+             c = caractere_suivant();
+             if (c == FIN_TRAME) {
+               passe = 3; 
+             }
+             
+           }
+         }
+     }
+     return passe;  
 }
 
 void CEC::lire_information(){
 
+   byte c,d;
+   
    txrx->flush();
 
    byte tab_lire_conf[] = {
@@ -111,17 +164,40 @@ void CEC::lire_information(){
       txrx->write(tab_lire_conf[i]);
       //Serial.println(tab_lire_conf[i],OCT);         
    }
-   delay(10);
-   Serial.println("---"); 
-   //recevoir la reponse
-   //recoit 23 octets
-   if (txrx->available() > 22)
-    {
-      for (int i=0;i<=22;i++) {
-      char c = txrx->read();
-      Serial.println(byte(c),DEC);
-      }
+   delay(100);
+    
+    //teste la trame et affecte les variables trame[] et nb_octets
+    int test;
+    test = decode_trame("--CONF--",30);
+     
+    if (test == 3) {
+       //la reception est ok a ce stade
+       //a faire creer des variables pour memoriser toutes ces infos
+       Serial.println("TRAME:"+String(nb_octets)+" OCTETS");
+       Serial.println("Version HW - Carte mere:"+String(trame[1])+"."+String(trame[2]));
+       Serial.println("Version SW - Carte mere:"+String(trame[3])+"."+String(trame[4]));
+       Serial.println("Version HW - Carte capteur:"+String(trame[9])+"."+String(trame[10]));
+       Serial.println("Version SW - Carte capteur:"+String(trame[11])+"."+String(trame[12]));
+       Serial.println("Version trame:"+String(trame[13]));
+       Serial.print("Heure "+String(trame[14]));
+       Serial.print(":"+String(trame[15]));
+       Serial.print(":"+String(trame[16]));
+       long millis = (long)(trame[17]*256 + trame[18]);
+       Serial.println("."+String(millis));
+       Serial.println("Etat des connexions:"+String(trame[19]));
+       Serial.println("Etat des connexions extérieures:"+String(trame[20]));
+       float millisV = (long)(trame[21]*256 + trame[22])/1000;
+       Serial.println("Tension: "+String(millisV)+" Volts");
+       Serial.println("Erreur: "+String(trame[23]));
+       
+       //for (int i=0; i<nb_octets; i++){
+          //Serial.println(trame[i],HEX);
+       //}
+       
     }
+   
+   
+    
     
     
 }

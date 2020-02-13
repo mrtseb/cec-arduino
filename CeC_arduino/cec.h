@@ -58,10 +58,15 @@ class CEC {
     byte vzone1_LSB;
     byte tzone1_MSB;
     byte tzone1_LSB;
-    int octets_sortie;
+    long nb_octets = 0;
    
   private:
     SoftwareSerial * txrx;
+    byte caractere_suivant();
+    int decode_trame(String s, int n);
+    byte trame[128];
+    
+
     
  
    
