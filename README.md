@@ -20,7 +20,6 @@ se réalise au travers de l'envoi et de la réception de trames d'octets.
 Le code fourni ici est un code Opensource. Merci simplement de conserver le droit de paternité de l'oeuvre et de citer le nom de l'auteur.
 
 L'auteur est ouvert à toute remarque et toute contribution qui pourraient faire avancer le projet.
-
 Pour toute question ou suggestion, s'adresser à sebastien.tack@ac-caen.fr . 
 
 Lancement du projet: Février 2020
@@ -28,5 +27,5 @@ Lancement du projet: Février 2020
 # A propos de l'auteur:
 
 Sébastien TACK
-
 Professeur de sciences de l'ingénieur au lycée Mezeray d'Argentan. 
+sebastien.tack@ac-caen.fr
