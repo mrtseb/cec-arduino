@@ -50,7 +50,7 @@ void CEC::lire_mesures(){
       txrx->write(tab_mesure[i]);
                
    }
-   delay(100);
+   delay(10);
 
    while (txrx->available())
     {
@@ -65,7 +65,7 @@ void CEC::lire_mesures(){
 }
 void CEC::test(){
   
-  txrx->flush();
+  //txrx->flush();
   
    byte tab_test[] = {
      IDCARD_NO_CRC,DEBUT_TRAME,ZERO,2,CMD_TEST,CMD_TEST_1, ZERO, ZERO, FIN_TRAME    
@@ -78,37 +78,82 @@ void CEC::test(){
    for (int i=0; i<=sizeof(tab_test); i++)
    {     
       txrx->write(tab_test[i]);
-      //Serial.println(tab_test[i],OCT);         
-   }
-   delay(10);
-   if (txrx->available()) {
-    byte c = txrx->read();
-    Serial.println(c,HEX);    
+      //Serial.println(tab_test[i],HEX);         
    }
    
+   if (txrx->available()) {
+     byte c = caractere_suivant();
+     //Serial.println(c,HEX);    
+   }
+      
    for (int i=0; i<=sizeof(tab_test2); i++)
    {     
       txrx->write(tab_test2[i]);
-      //Serial.println(tab_test2[i],OCT);         
+      //Serial.println(tab_test2[i],HEX);         
    }
    delay(10);
+   /*
+   while (txrx->available()) {
+     byte c = caractere_suivant();
+     Serial.println(c,HEX);    
+   }*/
+    
  
-   while (txrx->available())
-    {
-      //for (int i=0;i<=65;i++) {
-      byte c = txrx->read();
-      Serial.println(c,HEX);
-      //}
-   }
+    int montest = decode_trame("--TEST--",62);
+        
+    if (montest == 3) {
+      Serial.println("Test ok");
+      /*
+      N° octet  Nom du paramétres Description Format  Unité Plage
+      0 Format "test" Numéro de format de la trame réponse  hex NA  NA
+      1 - 2 Tension   Tension batterie  hex mV  NA
+      3 - 8 Adresse MAC Wifi  Adresse MAC Wifi  hex NA  NA
+      9 - 14  Adresse MAC Bluetooth Adresse MAC Bluetooth hex NA  NA
+      15  ID accelerometre ADXL344    hex NA  NA
+      16  Etat EEPROM   hex 0 ou 1  NA
+      17 - 24 Reservé   NA  NA  NA
+      25  Etat I/O Expander   hex 0 ou 1  NA
+      26  ID accelerometre LSM9D    hex NA  NA
+      27 - 30 Version HW et SW ATtiny   hex NA  NA
+      31 - 38 Reservé   NA  NA  NA
+      39 - 40 Capteur temperature   hex diziéme de °C NA
+      41 - 42 Courant actuel    hex mA  NA
+      43 - 46 Version STM32   NA  NA  NA
+      47  Etat moteur   hex 0 ou 1  NA
+
+      */
+       Serial.print("MAC Wifi: ");Serial.print(trame[4],HEX);
+       Serial.print(":");Serial.print(trame[5],HEX);
+       Serial.print(":");Serial.print(trame[6],HEX);
+       Serial.print(":");Serial.print(trame[7],HEX);
+       Serial.print(":");Serial.print(trame[8],HEX);
+       Serial.print(":");Serial.print(trame[9],HEX);
+       Serial.println();
+       Serial.print("MAC Bluetooth: ");Serial.print(trame[10],HEX);
+       Serial.print(":");Serial.print(trame[11],HEX);
+       Serial.print(":");Serial.print(trame[12],HEX);
+       Serial.print(":");Serial.print(trame[13],HEX);
+       Serial.print(":");Serial.print(trame[14],HEX);
+       Serial.print(":");Serial.print(trame[15],HEX);
+       Serial.println();
+       float millisV = (long)(trame[2]*256 + trame[3])/1000.0;
+       Serial.println("Tension: "+String(millisV));
+       float temp = (long)(trame[40]*256 + trame[41])/10.0;
+       Serial.println("Temp: "+String(temp));
+    
+    }
+ 
 }
 
-byte CEC::caractere_suivant(){
-       int c = txrx->read(); 
-      //Serial.println(byte(c),HEX);
+byte CEC::caractere_suivant(bool debug=false){
+      int c = txrx->read(); 
+      if (debug) {
+        Serial.println(byte(c),HEX);
+      }
       return((byte) c);
 }
 
-int CEC::decode_trame(String s, int n){
+int CEC::decode_trame(String s, int n, bool debug=false){
    //recevoir la reponse
    //recoit N octets
    byte c,d;
@@ -117,28 +162,28 @@ int CEC::decode_trame(String s, int n){
    if (txrx->available() > n)
     {
       //recevoir entete
-        c = caractere_suivant();
-        if (c==IDCARD_CRC) {
+        c = caractere_suivant(debug);
+        if (c==IDCARD_CRC or c==IDCARD_NO_CRC) {
            passe = 1;
            
-           c = caractere_suivant();
+           c = caractere_suivant(debug);
            if (c==DEBUT_TRAME) {
              passe = 2;
              
-             c = caractere_suivant();
-             d = caractere_suivant();
+             c = caractere_suivant(debug);
+             d = caractere_suivant(debug);
              nb_octets = (int)((c*256) + d);
              
              for (int i=0; i<=nb_octets-1; i++){
                
-               c = caractere_suivant();
+               c = caractere_suivant(debug);
                trame[i] = c;
              
              }
              //lecture CRC
-             c = caractere_suivant(); c = caractere_suivant();
+             c = caractere_suivant(debug); c = caractere_suivant(debug);
              
-             c = caractere_suivant();
+             c = caractere_suivant(debug);
              if (c == FIN_TRAME) {
                passe = 3; 
              }
@@ -164,13 +209,14 @@ void CEC::lire_information(){
       txrx->write(tab_lire_conf[i]);
       //Serial.println(tab_lire_conf[i],OCT);         
    }
-   delay(100);
-    
+   delay(10);
+   int montest;
+    montest = decode_trame("--CONF--",30);
     //teste la trame et affecte les variables trame[] et nb_octets
-    int test;
-    test = decode_trame("--CONF--",30);
+    
+    
      
-    if (test == 3) {
+    if (montest == 3) {
        //la reception est ok a ce stade
        //a faire creer des variables pour memoriser toutes ces infos
        Serial.println("TRAME:"+String(nb_octets)+" OCTETS");

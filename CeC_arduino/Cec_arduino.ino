@@ -18,8 +18,9 @@ void setup() {
   course.lire_information();
   delay(50);
   //Serial.println("test");
-  //course.test();  
-  //delay(50);
+  
+  course.test();  
+  delay(50);
   //Serial.println("mesures");
   //course.lire_mesures();  
   //delay(50);

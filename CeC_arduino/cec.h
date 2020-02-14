@@ -62,8 +62,8 @@ class CEC {
    
   private:
     SoftwareSerial * txrx;
-    byte caractere_suivant();
-    int decode_trame(String s, int n);
+    byte caractere_suivant(bool debug=false);
+    int decode_trame(String s, int n, bool debug=false);
     byte trame[128];
     
 
