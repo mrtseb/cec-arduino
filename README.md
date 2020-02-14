@@ -1,5 +1,5 @@
 # cec-arduino
-*Librairie arduinio pour le projet Courses en Cours*
+Librairie arduinio pour le projet Courses en Cours
 
 Le challenge "Courses en cours" offre cette année la possibilité de piloter le moteur au travers d'une carte Arduino. 
 Malheureusement pour le moment acune librairie ne prend en charge ce pilotage.
@@ -8,7 +8,7 @@ Les fonctions permettent:
 
     - de récupérer des informations depuis l'Arduino connectée en série sur le port UART du moteur.
     - de configurer la course
-	- de lancer la course
+    - de lancer la course
 
 Limitations:
 
@@ -25,7 +25,7 @@ Pour toute question ou suggestion, s'adresser à sebastien.tack@ac-caen.fr .
 
 Lancement du projet: Février 2020
 
-*A propos de l'auteur:*
+# A propos de l'auteur:
 
 Sébastien TACK
 
