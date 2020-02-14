@@ -1,8 +1,12 @@
 # cec-arduino
 Librairie arduinio pour le projet Courses en Cours
 
+https://www.course-en-cours.com/fr/
+
 Le challenge "Courses en cours" offre cette année la possibilité de piloter le moteur au travers d'une carte Arduino. 
-Malheureusement pour le moment acune librairie ne prend en charge ce pilotage.
+Malheureusement pour le moment acune librairie ne prend en charge ce pilotage. C'est la raison d'être de ce dépôt.
+
+
 
 Les fonctions permettent:
 
