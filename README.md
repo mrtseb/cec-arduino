@@ -17,6 +17,7 @@ Les fonctions permettent:
 Limitations:
 
     - il n'y a pas controle du CRC
+	- pour le moment il faut au préalable connecter le moteur au bluetooth une première fois pour utiliser la carte Arduino
 
 Le fichier excel "CeC - API Véhicule - V1.9.xlsx", décrit l'API de commande du moteur. Comme bien souvent dans les systèmes techniques modernes, l'échange d'informations 
 se réalise au travers de l'envoi et de la réception de trames d'octets.

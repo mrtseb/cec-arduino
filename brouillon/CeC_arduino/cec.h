@@ -27,6 +27,7 @@ class CEC {
     void test();
     void avancer();
     void envoyer_conf();
+    void etalonner_capteurs();  
     void lire_information();
     void lire_mesures();
     void configure_longueur_piste(unsigned int piste);

@@ -249,11 +249,29 @@ void CEC::lire_information(){
     
 }
 
+
+void CEC::etalonner_capteurs(){
+    config_vehicule = config_vehicule xor 0x14;
+    //config_course = 
+    envoyer_conf();
+    config_vehicule = config_vehicule xor 0x14;
+    //config_course = 
+    while (txrx->available())
+    {
+      
+      byte c = txrx->read();
+      Serial.println(c,HEX);
+     
+  
+    }
+}
+
 void CEC::envoyer_conf(){
  
 byte tab_conf[] = {
   IDCARD_NO_CRC,DEBUT_TRAME,ZERO,OCTETS_CONFIG,CMD_CONFIG,longueur_piste_MSB,longueur_piste_LSB,longueur_damier, roue_MSB,roue_LSB,DENTS_PIGNON1,DENTS_PIGNON2,
-  config_vehicule,config_course,ZERO,periodicite_mesures,couleurD,ZERO,ZERO,couleurF,
+  config_vehicule,config_course,
+  ZERO,periodicite_mesures,couleurD,ZERO,ZERO,couleurF,
   duree_MSB, duree_LSB, 
   vmin_MSB, vmin_LSB=0x0A,
   vmax_MSB=0x03,vmax_LSB=0xE8,
