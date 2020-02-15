@@ -38,10 +38,10 @@ CEC::CEC(SoftwareSerial * ss) {
 
 void CEC::lire_mesures(){
 
-  txrx->flush();
+  //txrx->flush();
   
    byte tab_mesure[] = {
-     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,1,CMD_MESURE, ZERO, ZERO, FIN_TRAME    
+     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,1,CMD_LAST_MESURE, ZERO, ZERO, FIN_TRAME    
    };
 
    
@@ -50,7 +50,7 @@ void CEC::lire_mesures(){
       txrx->write(tab_mesure[i]);
                
    }
-   delay(10);
+   delay(100);
 
    while (txrx->available())
     {

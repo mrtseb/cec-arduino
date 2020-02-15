@@ -16,19 +16,19 @@ void setup() {
   
   course.configure_longueur_piste(200);
   course.configure_roue(600);
+  
   course.etalonner_capteurs();
-  delay(500);
+  delay(10);
   //on lit les infos de la carte
   course.lire_information();
-  delay(500);
+  delay(10);
  
   
   course.test();  
-  delay(500);
-  //Serial.println("mesures");
-  //course.lire_mesures();  
+  delay(10);
   
   
+ 
   
   
   
@@ -36,8 +36,8 @@ void setup() {
 
 void loop() {
 
-  course.oldbegin();
-  delay(2000);
+  //course.oldbegin();
+  //delay(2000);
   //version lourde qui part de la doc originelle
   //sert pour le deboguage pour s'assurer que le moteur est ok
   //a eviter
@@ -47,7 +47,15 @@ void loop() {
   //course.configure_roue(600);
   //course.envoyer_conf();
   //delay(1000);
-  //course.avancer();
+  
+  course.avancer();
+  
+ //lire N mesures
+  for (int i=0; i<20;i++) {
+    course.lire_mesures();  
+    delay(4.5);
+  }
+ 
   while(1);
    
   
