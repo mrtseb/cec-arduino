@@ -14,16 +14,18 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
   
-  //on lit les infos de la carte
-  course.lire_information();
-  delay(50);
-  //Serial.println("test");
+  course.configure_longueur_piste(200);
+  course.configure_roue(600);
+  course.etalonner_capteurs();
+  delay(10);
   
+  //on lit les infos du moteur
+  course.lire_information();
+  delay(10);
   course.test();  
-  delay(50);
-  //Serial.println("mesures");
-  //course.lire_mesures();  
-  //delay(50);
+  delay(10);
+  
+ 
   
   
   
@@ -37,12 +39,18 @@ void loop() {
   //sert pour le deboguage pour s'assurer que le moteur est ok
   //a eviter
 
- // on configure la course
+  // on configure la cour
   //course.configure_longueur_piste(200);
   //course.configure_roue(600);
   //course.envoyer_conf();
-  //delay(1000);
-  //course.avancer();
+  //delay(500);
+  
+  course.lancer();
+  delay(3000);
+  course.lire_mesures();
+  delay(5000);  
+  
+
   while(1);
    
   
