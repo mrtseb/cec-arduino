@@ -37,11 +37,11 @@ CEC::CEC(SoftwareSerial * ss) {
 
 
 void CEC::lire_mesures(){
-
-  //txrx->flush();
-  
+   
+   byte c;
+     
    byte tab_mesure[] = {
-     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,1,CMD_LAST_MESURE, ZERO, ZERO, FIN_TRAME    
+     IDCARD_NO_CRC,DEBUT_TRAME,ZERO,1,CMD_BILAN, ZERO, ZERO, FIN_TRAME    
    };
 
    
@@ -50,22 +50,62 @@ void CEC::lire_mesures(){
       txrx->write(tab_mesure[i]);
                
    }
-   delay(100);
-
-   while (txrx->available())
+   //reponse de trame
+   c = txrx->read();
+   
+   delay(10);
+   
+   /*
+    while (txrx->available())
     {
       
-      byte c = txrx->read();
+      c = txrx->read();
       Serial.println(c,HEX);
-     
-  
-    }
+    }*/
     
+
+    
+   
+    int montest;
+    montest = decode_trame("mesure");
+          
+     
+    if (montest == 3) {
+      Serial.println("---BILAN---");
+      
+      //ici le bilan est disponible
+      /*
+       0 - 1 Temps Temps de la course  hex ms  0 à 65535
+       2 - 3 Distance  Distance parcourue  hex cm  0 à 65535
+       4 - 5 Vitesse moyenne Vitesse moyenne pour la course  hex cm/sec  0 à 65535
+       6 - 7 Vitesse maximum atteinte  Vitesse maxi pour la course hex cm/sec  0 à 65535
+       8 - 9 Cumul consommation courant    hex A sec 0 à 65535
+       10 - 11 Puissance consommmée    hex W sec 0 à 65535
+       12  Type de départ  Type de départ pour la course - voir tableau  hex NA  0 à 255
+       13  Motif fin de course Motif arrêt course - Voir tableau hex   0 à 255
+
+       */
+       
+       float temps = (int)(trame[1]*256+trame[2])/1000.0;
+       float distance = (int)(trame[3]*256+trame[4])/1000.0;
+       float vmoy = (int)(trame[5]*256+trame[6])/100.0;
+       float vmax = (int)(trame[7]*256+trame[8])/100.0;
+       float cumul = (int)(trame[9]*256+trame[10])/1.0;
+       float energie = (int)(trame[11]*256+trame[12])/1.0;
+       Serial.println("Temps: "+String(temps)+" sec");
+       Serial.println("Distance: "+String(distance)+" m");
+       Serial.println("V moy.: "+String(vmoy)+" m/s");
+       Serial.println("V max.: "+String(vmax)+" m/s");
+       Serial.println("Cumul.: "+String(cumul)+" A.s");
+       Serial.println("Energie : "+String(energie)+" W.s");
+   
+    }
+       
   
 }
 void CEC::test(){
   
-  //txrx->flush();
+  
   
    byte tab_test[] = {
      IDCARD_NO_CRC,DEBUT_TRAME,ZERO,2,CMD_TEST,CMD_TEST_1, ZERO, ZERO, FIN_TRAME    
@@ -99,7 +139,7 @@ void CEC::test(){
    }*/
     
  
-    int montest = decode_trame("--TEST--",62);
+    int montest = decode_trame("--TEST--");
         
     if (montest == 3) {
       Serial.println("Test ok");
@@ -153,46 +193,54 @@ byte CEC::caractere_suivant(bool debug=false){
       return((byte) c);
 }
 
-int CEC::decode_trame(String s, int n, bool debug=false){
-   //recevoir la reponse
-   //recoit N octets
-   byte c,d;
+int CEC::decode_mesure(bool debug=false){
+
+   while (txrx->available()) {
+     byte c = caractere_suivant();
+     Serial.println(c,HEX); 
+   }
+  
+}
+
+int CEC::decode_trame(String s, bool debug=false){
    int passe = 0;
-   Serial.println(s);
-   if (txrx->available() > n)
-    {
-      //recevoir entete
-        c = caractere_suivant(debug);
-        if (c==IDCARD_CRC or c==IDCARD_NO_CRC) {
-           passe = 1;
-           
-           c = caractere_suivant(debug);
-           if (c==DEBUT_TRAME) {
+   byte c,d;
+   //attendre ID trame
+   c = caractere_suivant(debug);
+   
+   
+   while (c != IDCARD_CRC and c != IDCARD_NO_CRC){
+      c = caractere_suivant(true);
+      
+   }
+   passe = 1;
+   
+
+   c = caractere_suivant(debug);
+   if (c==DEBUT_TRAME) {
              passe = 2;
-             
              c = caractere_suivant(debug);
              d = caractere_suivant(debug);
              nb_octets = (int)((c*256) + d);
              Serial.println("TRAME:"+String(nb_octets)+" OCTETS");
-             
-             for (int i=0; i<=nb_octets-1; i++){
+              //recevoir la reponse
+              //recoit N octets
+              for (int i=0; i<=nb_octets-1; i++){
                
                c = caractere_suivant(debug);
                trame[i] = c;
              
-             }
+              }
              //lecture CRC
              c = caractere_suivant(debug); c = caractere_suivant(debug);
-             
+             //FIN DE TRAME
              c = caractere_suivant(debug);
              if (c == FIN_TRAME) {
                passe = 3; 
              }
-             
-           }
-         }
-     }
-     return passe;  
+   }
+    
+   return passe;  
 }
 
 void CEC::lire_information(){
@@ -208,11 +256,11 @@ void CEC::lire_information(){
    for (int i=0; i<=sizeof(tab_lire_conf); i++)
    {     
       txrx->write(tab_lire_conf[i]);
-      //Serial.println(tab_lire_conf[i],OCT);         
+      //Serial.println(tab_lire_conf[i],HEX);         
    }
    delay(10);
    int montest;
-    montest = decode_trame("--CONF--",30);
+    montest = decode_trame("--CONF--");
     //teste la trame et affecte les variables trame[] et nb_octets
     
     
@@ -242,11 +290,7 @@ void CEC::lire_information(){
        //}
        
     }
-   
-   
-    
-    
-    
+      
 }
 
 
@@ -256,7 +300,7 @@ void CEC::etalonner_capteurs(){
     envoyer_conf();
     config_vehicule = config_vehicule xor 0x14;
     //config_course = 
-    while (txrx->available())
+    if (txrx->available()== 1)
     {
       
       byte c = txrx->read();
@@ -297,6 +341,34 @@ for (int i=0; i<=42; i++)
 }
 
 void CEC::avancer(){
+  
+}
+
+void CEC::stopper(){
+  byte  HEURE = 0x00;
+  byte  MINUTE = 0x00;
+  byte  SECONDE = 0x00;
+  byte  MILLIS_MSB = 0x00;
+  byte  MILLIS_LSB = 0x00;
+  byte tab_stopper[] = { IDCARD_NO_CRC,DEBUT_TRAME,ZERO,13,
+  CMD_ACTION ,0x07 ,HEURE ,MINUTE ,SECONDE ,MILLIS_MSB ,MILLIS_LSB ,ZERO ,ZERO ,ZERO ,ZERO ,ZERO ,ZERO,
+  ZERO,ZERO,FIN_TRAME};
+  
+  for (int i=0; i<sizeof(tab_stopper); i++)
+  {     
+      txrx->write(tab_stopper[i]);
+   
+  }
+
+   byte c = caractere_suivant(false);
+
+}
+void CEC::vider(){
+  while(txrx->available () > 0){
+     Serial.read();
+  }
+}
+void CEC::lancer(){
 
   //action ok :
 
@@ -306,16 +378,17 @@ void CEC::avancer(){
   byte  SECONDE = 0x00;
   byte  MILLIS_MSB = 0x00;
   byte  MILLIS_LSB = 0x00;
-  byte tab_avancer[] = { IDCARD_NO_CRC,DEBUT_TRAME,ZERO,13,
+  byte tab_lancer[] = { IDCARD_NO_CRC,DEBUT_TRAME,ZERO,13,
   CMD_ACTION ,0x02 ,HEURE ,MINUTE ,SECONDE ,MILLIS_MSB ,MILLIS_LSB ,ZERO ,ZERO ,ZERO ,ZERO ,ZERO ,ZERO,
   ZERO,ZERO,FIN_TRAME};
   
-  for (int i=0; i<sizeof(tab_avancer); i++)
+  for (int i=0; i<sizeof(tab_lancer); i++)
   {     
-      txrx->write(tab_avancer[i]);
+      txrx->write(tab_lancer[i]);
    
   }
 
+  
 }
 
 void CEC::configure_longueur_piste(unsigned int piste) {

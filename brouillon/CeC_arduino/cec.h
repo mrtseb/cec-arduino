@@ -25,6 +25,8 @@ class CEC {
     
     void oldbegin();
     void test();
+    void lancer();
+    void stopper();
     void avancer();
     void envoyer_conf();
     void etalonner_capteurs();  
@@ -64,8 +66,10 @@ class CEC {
   private:
     SoftwareSerial * txrx;
     byte caractere_suivant(bool debug=false);
-    int decode_trame(String s, int n, bool debug=false);
+    int decode_trame(String s, bool debug=false);
+    int decode_mesure(bool debug=false);
     byte trame[128];
+    void vider();
     
 
     
