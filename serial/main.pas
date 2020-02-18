@@ -6,10 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  SdpoSerial, cec_crc;
-
-
-
+  ComCtrls, SdpoSerial, cec_crc;
 
 type
 
@@ -24,7 +21,9 @@ type
     infos: TMemo;
     debug: TMemo;
     Label1: TLabel;
+    Label2: TLabel;
     Panel1: TPanel;
+    pg_batt: TProgressBar;
     test: TMemo;
     lblOctets: TLabel;
     serial: TSdpoSerial;
@@ -35,6 +34,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure infosChange(Sender: TObject);
+    procedure Label2Click(Sender: TObject);
     procedure serialRxData(Sender: TObject);
   private
     crc1,crc2:byte;
@@ -46,6 +46,10 @@ type
   public
 
   end;
+const
+  battMax = 12025;
+  battMin = 10000;
+
 
 var
   Form1: TForm1;
@@ -118,7 +122,7 @@ begin
          lblOctets.caption:='Octets: '+inttostr(self.octets-3);
          for i:=0 to self.octets-1 do begin
               trame[i]:=Serial.SynSer.RecvByte(500);
-              debug.lines.add(inttostr(trame[i]));
+              debug.lines.add(inttoHex(trame[i],2));
 
           end;
         end;
@@ -145,13 +149,23 @@ begin
 
 end;
 
-procedure Tform1.traiter_test;
+procedure TForm1.Label2Click(Sender: TObject);
 begin
- //
+
+end;
+
+procedure Tform1.traiter_test;
+var batt_mv: real;
+    batt_percent:integer;
+begin
 
   self.test.clear;
   self.test.lines.add('Format test : '+inttostr(trame[1]));
-  self.test.lines.add('Tension batt : '+floattostr((256*trame[2]+trame[3])/1000.0));
+  batt_mv:=(trame[2]*256+trame[3]);
+  self.test.lines.add('Tension batterie: '+floattostr(batt_mv/1000.0));
+  batt_percent:=round(100.0*((batt_mv - battMin) / (battMax - battMin)));
+  self.pg_batt.Position:=batt_percent;
+  self.test.lines.add('Batterie %: '+floattostr(batt_percent));
   self.test.lines.add('@MAC WIFI : '+inttohex(trame[4],2)+':'+inttohex(trame[5],2)+':'+inttohex(trame[6],2)+':'+inttohex(trame[7],2)+':'+inttohex(trame[8],2)+':'+inttohex(trame[9],2));
   self.test.lines.add('@MAC BLUET : '+inttohex(trame[10],2)+':'+inttohex(trame[11],2)+':'+inttohex(trame[12],2)+':'+inttohex(trame[13],2)+':'+inttohex(trame[14],2)+':'+inttohex(trame[15],2));
   self.test.lines.add('ID ADXL 344 : '+inttostr(trame[16]));
@@ -162,10 +176,13 @@ begin
   self.test.lines.add('SW - ATTiny: '+inttostr(trame[29])+'.'+inttostr(trame[30]));
   self.test.lines.add('Temp degC : '+floattostr((256*trame[40]+trame[41])/10.0));
   self.test.lines.add('Courant mA : '+floattostr((256*trame[42]+trame[43])/1000.0));
-   self.test.lines.add('Moteur : '+inttostr(trame[48]));
+  self.test.lines.add('Moteur : '+inttostr(trame[48]));
+
 end;
 
 procedure Tform1.traiter_infos;
+var batt_mv: real;
+    batt_percent:integer;
 begin
 
   //
@@ -180,7 +197,11 @@ begin
   self.infos.lines.add('Horloge: '+inttostr(trame[14])+':'+inttostr(trame[15])+':'+inttostr(trame[16])+' et '+inttostr(trame[17]*256+trame[18])+' ms');
   self.infos.lines.add('Connexion système: '+inttostr(trame[19]));
   self.infos.lines.add('Connexion extérieur: '+inttostr(trame[20]));
-  self.infos.lines.add('Tension batterie: '+floattostr((trame[21]*256+trame[22])/1000.0));
+  batt_mv:=(trame[21]*256+trame[22]);
+  self.infos.lines.add('Tension batterie: '+floattostr(batt_mv));
+  batt_percent:=round(100.0*((batt_mv - battMin) / (battMax - battMin)));
+  self.pg_batt.Position:=batt_percent;
+  self.infos.lines.add('Batterie %: '+floattostr(batt_percent));
   self.infos.lines.add('Erreur: '+inttostr(trame[23]));
 end;
 
@@ -228,6 +249,8 @@ end;
 
 procedure TForm1.Button4Click(Sender: TObject);
 begin
+  serial.Close;
+  serial.Active:=false;
   self.cmbPorts.text:='';
   self.cmbPorts.Items:=lire_com;
  if self.cmbPorts.Items.count>=1 then begin self.cmbPorts.ItemIndex:=self.cmbPorts.Items.count-1;  end;
@@ -242,7 +265,8 @@ end;
 
 procedure TForm1.FormActivate(Sender: TObject);
 begin
-
+  self.pg_batt.Min:=0;
+  self.pg_batt.Max:=100;
   self.Button4Click(sender);
 
 
