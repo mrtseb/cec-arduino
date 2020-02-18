@@ -47,8 +47,8 @@ void loop() {
   
   course.lancer();
   delay(3000);
-  course.lire_mesures();
-  delay(5000);  
+  course.lire_bilan();
+  delay(10000);  
   
 
   while(1);

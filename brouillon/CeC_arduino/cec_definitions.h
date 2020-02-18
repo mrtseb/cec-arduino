@@ -3,6 +3,7 @@
 MIT license
 written by MrT sebastien.tack@ac-caen.fr
 */
+#define BUFFER_MAX        (byte)0x80
 #define ZERO              (byte)0x00
 #define OCTETS_CONFIG     69
 #define OCTETS_LIRE_CONF  1

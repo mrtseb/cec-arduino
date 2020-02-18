@@ -6,7 +6,8 @@ written by MrT sebastien.tack@ac-caen.fr
 #include "cec.h"
 
 CEC::CEC(SoftwareSerial * ss) {
-  
+
+  debut_buffer = &trame[0]; 
   txrx = ss;
   //piste a 20m par defaut
   configure_longueur_piste(200);
@@ -36,7 +37,7 @@ CEC::CEC(SoftwareSerial * ss) {
 }
 
 
-void CEC::lire_mesures(){
+void CEC::lire_bilan(){
    
    byte c;
      
@@ -205,17 +206,16 @@ int CEC::decode_mesure(bool debug=false){
 int CEC::decode_trame(String s, bool debug=false){
    int passe = 0;
    byte c,d;
+   p = debut_buffer;
    //attendre ID trame
    c = caractere_suivant(debug);
    
    
    while (c != IDCARD_CRC and c != IDCARD_NO_CRC){
-      c = caractere_suivant(true);
-      
+      c = caractere_suivant(true);      
    }
    passe = 1;
    
-
    c = caractere_suivant(debug);
    if (c==DEBUT_TRAME) {
              passe = 2;
@@ -227,8 +227,10 @@ int CEC::decode_trame(String s, bool debug=false){
               //recoit N octets
               for (int i=0; i<=nb_octets-1; i++){
                
-               c = caractere_suivant(debug);
-               trame[i] = c;
+               //c = caractere_suivant(debug);
+               //trame[i] = c;
+               *p = caractere_suivant(debug);
+               p++; 
              
               }
              //lecture CRC
@@ -260,10 +262,8 @@ void CEC::lire_information(){
    }
    delay(10);
    int montest;
-    montest = decode_trame("--CONF--");
-    //teste la trame et affecte les variables trame[] et nb_octets
-    
-    
+   montest = decode_trame("--CONF--");
+   //teste la trame et affecte les variables trame[] et nb_octets
      
     if (montest == 3) {
        //la reception est ok a ce stade
@@ -356,13 +356,13 @@ void CEC::stopper(){
   
   for (int i=0; i<sizeof(tab_stopper); i++)
   {     
-      txrx->write(tab_stopper[i]);
-   
+      txrx->write(tab_stopper[i]);   
   }
 
    byte c = caractere_suivant(false);
 
 }
+
 void CEC::vider(){
   while(txrx->available () > 0){
      Serial.read();

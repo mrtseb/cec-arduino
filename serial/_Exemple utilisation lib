@@ -1,0 +1,62 @@
+/// Exemple d'utilisation ///  
+
+
+/// demande l'auto test ///
+  public void WriteAskForTest()
+    {
+        byte[] paramHardcode = { 0x01 };
+        byte[] TRAME = Trame_ENVOIE.EnvoiTrame(0x50, paramHardcode);
+        Tester.Call("writeUnityByte", TRAME); ==> Tester==> objet faisant appel à ma librairie d'envoie via le 
+    }
+	
+	
+	
+	
+	
+	
+	
+	///recupération de la batterie suite a une demande d'info commande 0x10/// 
+	La lecture des infos se fait dès la reception d'une valeur sur le canaux 
+	 if (Value[0] == 'a' && Value[1] == '3' && Value[8] == '1' && Value[9] == '0')
+        {
+            DimensionTrameTest = Convert.ToInt32(Value.Substring(4, 4), 16) + 7;
+            byte[] TrameParamInfo = ConvertHexStringToByteArray(Value);
+
+            var TrameParamListInfo = new List<byte>();
+            TrameParamListInfo.AddRange(TrameParamInfo);
+            bool Verif = Trame_ENVOIE.VerifCRC(TrameParamListInfo.ToArray()); ==> verification de la trame
+            if (Verif == true)
+            {
+                TrameParamListInfo.RemoveRange(0, 5);
+                TrameParamListInfo.RemoveRange(TrameParamListInfo.Count - 3, 3);
+                var TrameCompleteInfo = new List<byte[]>();
+                TrameCompleteInfo.Add(TrameParamListInfo.ToArray());
+                foreach (byte[] ARRAYbt in TrameCompleteInfo)
+                {
+                    if (VersionSoftwareCarteMere.text.Contains("SW") != true)
+                    {
+                        VersionSoftwareCarteMere.text = "SW:" + ARRAYbt[2] + "." + ARRAYbt[3] + ",HW:" + ARRAYbt[0] + "." + ARRAYbt[1];
+                    }
+                    
+                    BatteryChargeFloat = (ARRAYbt[20] * 256 + ARRAYbt[21]) / 1000.0f;
+                    float ChargeBatteryPercent = (BatteryChargeFloat - 10.0f) / (MaxBattery - MinBattery);
+                    if (ChargeBatteryPercent <= 1 && ChargeBatteryPercent>=0)
+                    {
+                        BatteryChargeSlider.value = ChargeBatteryPercent;
+                        BatteryCharge.text = Mathf.RoundToInt(ChargeBatteryPercent * 100.0f) + "%";
+                    }
+                    else if (ChargeBatteryPercent<0)
+                    {
+                        BatteryChargeSlider.value = 0.0f;
+                        BatteryCharge.text = 0 + "%";
+                    }
+                    else
+                    {
+                        BatteryChargeSlider.value = 1.0f;
+                        BatteryCharge.text = 100 + "%";
+                    }
+
+
+                }
+            }
+        }

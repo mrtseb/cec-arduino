@@ -1,0 +1,141 @@
+object Form1: TForm1
+  Left = 370
+  Height = 613
+  Top = 192
+  Width = 900
+  Caption = 'Pilotage moteur courses en cours - sebastien.tack@ac-caen.fr'
+  ClientHeight = 613
+  ClientWidth = 900
+  OnActivate = FormActivate
+  OnCreate = FormCreate
+  LCLVersion = '2.0.2.0'
+  object Button1: TButton
+    Left = 0
+    Height = 35
+    Top = 80
+    Width = 200
+    Caption = '&Lire infos'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object infos: TMemo
+    Left = 0
+    Height = 307
+    Top = 120
+    Width = 203
+    Align = alCustom
+    OnChange = infosChange
+    ScrollBars = ssVertical
+    TabOrder = 1
+  end
+  object lblOctets: TLabel
+    Left = 8
+    Height = 30
+    Top = 37
+    Width = 97
+    Align = alCustom
+    Caption = 'Octets : ....'
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clBlack
+    Font.Height = -21
+    Font.Name = 'Segoe UI'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    ParentColor = False
+    ParentFont = False
+  end
+  object debug: TMemo
+    Left = 816
+    Height = 573
+    Top = 40
+    Width = 84
+    Align = alRight
+    Lines.Strings = (
+      ''
+    )
+    ScrollBars = ssVertical
+    TabOrder = 2
+  end
+  object Button2: TButton
+    Left = 200
+    Height = 35
+    Top = 40
+    Width = 200
+    Caption = 'Lancer test'
+    OnClick = Button2Click
+    TabOrder = 3
+  end
+  object test: TMemo
+    Left = 200
+    Height = 307
+    Top = 120
+    Width = 203
+    Align = alCustom
+    OnChange = infosChange
+    ScrollBars = ssVertical
+    TabOrder = 4
+  end
+  object Button3: TButton
+    Left = 200
+    Height = 35
+    Top = 80
+    Width = 200
+    Caption = 'Récupérer test'
+    OnClick = Button3Click
+    TabOrder = 5
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 40
+    Top = 0
+    Width = 900
+    Align = alTop
+    ClientHeight = 40
+    ClientWidth = 900
+    TabOrder = 6
+    object cmbPorts: TComboBox
+      Left = 88
+      Height = 23
+      Top = 8
+      Width = 128
+      ItemHeight = 15
+      TabOrder = 0
+    end
+    object Label1: TLabel
+      Left = 32
+      Height = 25
+      Top = 6
+      Width = 49
+      Caption = 'PORT:'
+      Font.CharSet = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -19
+      Font.Name = 'Segoe UI'
+      Font.Pitch = fpVariable
+      Font.Quality = fqDraft
+      ParentColor = False
+      ParentFont = False
+    end
+    object Button4: TButton
+      Left = 224
+      Height = 28
+      Top = 6
+      Width = 67
+      Caption = 'Choisir'
+      OnClick = Button4Click
+      TabOrder = 1
+    end
+  end
+  object serial: TSdpoSerial
+    Active = False
+    BaudRate = br115200
+    AltBaudRate = 0
+    DataBits = db8bits
+    Parity = pNone
+    FlowControl = fcNone
+    StopBits = sbOne
+    Device = 'COM9'
+    OnRxData = serialRxData
+    left = 848
+  end
+end

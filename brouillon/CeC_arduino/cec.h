@@ -31,7 +31,7 @@ class CEC {
     void envoyer_conf();
     void etalonner_capteurs();  
     void lire_information();
-    void lire_mesures();
+    void lire_bilan();
     void configure_longueur_piste(unsigned int piste);
     void configure_longueur_damier(byte damier);
     void configure_roue(unsigned int diametre);
@@ -68,8 +68,10 @@ class CEC {
     byte caractere_suivant(bool debug=false);
     int decode_trame(String s, bool debug=false);
     int decode_mesure(bool debug=false);
-    byte trame[128];
+    byte trame[BUFFER_MAX];
     void vider();
+    long debut_buffer;
+    byte *p;
     
 
     
