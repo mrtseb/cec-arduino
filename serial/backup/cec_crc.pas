@@ -4,6 +4,28 @@ unit cec_crc;
 
 interface
 
+const
+
+ZERO              = $00;
+OCTETS_CONFIG      =69 ;
+OCTETS_LIRE_CONF  = 1 ;
+IDCARD_NO_CRC     = $A4;
+IDCARD_CRC        = $A3;
+DEBUT_TRAME       = $02;
+FIN_TRAME         = $03;
+CMD_ACTION        = $30;
+CMD_CONFIG        = $21;
+DENTS_PIGNON1     = $0C;
+DENTS_PIGNON2     = $22;
+CMD_GET_INFO      = 16 ;
+CMD_TEST          = $50;
+CMD_TEST_1        = $01;
+CMD_TEST_2        = $02;
+CMD_MOUVEMENT     = $30;
+CMD_MESURE        = $40;
+CMD_LAST_MESURE   = $41;
+CMD_BILAN         = $42;
+
 procedure CRC_init();
 procedure CRC_Calc(ucOctet: byte );
 function VerifCRC(Trame: array of byte):boolean;
@@ -28,24 +50,7 @@ uses
 
 const
 
-ZERO              = $00;
-OCTETS_CONFIG      =69 ;
-OCTETS_LIRE_CONF  = 1 ;
-IDCARD_NO_CRC     = $A4;
-IDCARD_CRC        = $A3;
-DEBUT_TRAME       = $02;
-FIN_TRAME         = $03;
-CMD_ACTION        = $30;
-CMD_CONFIG        = $21;
-DENTS_PIGNON1     = $0C;
-DENTS_PIGNON2     = $22;
-CMD_GET_INFO      = 16 ;
-CMD_TEST          = $50;
-CMD_TEST_1        = $01;
-CMD_TEST_2        = $02;
-CMD_MESURE        = $40;
-CMD_LAST_MESURE   = $41;
-CMD_BILAN         = $42;
+
 
 
    auchCRCHi : array[0..255] of byte = (
